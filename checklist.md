@@ -35,7 +35,7 @@ shodan host 0.0.0.0
 curl "https://crt.sh/?q=0.0.0.0&output=json"
  Google Dorking
 
-text
+
 site:0.0.0.0
 intitle:"index of" 0.0.0.0
 inurl:0.0.0.0
@@ -68,7 +68,7 @@ wafw00f https://0.0.0.0 -a
 whatwaf -u http://0.0.0.0
 nmap --script=http-waf-detect 0.0.0.0
 nmap --script=http-waf-fingerprint 0.0.0.0
-Phase 2: Active Scanning & Port Enumeration
+# Phase 2: Active Scanning & Port Enumeration
 2.1 Basic Port Scanning
  Quick TCP Scan
 
