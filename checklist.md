@@ -1,15 +1,14 @@
 # Phase 1: Initial Reconnaissance & Information Gathering
 1.1 Passive Reconnaissance
  WHOIS Lookup
+## whois 0.0.0.0
 
-whois 0.0.0.0
 DNS Enumeration
-
-
 nslookup 0.0.0.0
 dig -x 0.0.0.0
 host 0.0.0.0
- Reverse DNS Lookup
+
+Reverse DNS Lookup
 
 
 dig -x 0.0.0.0 +short
