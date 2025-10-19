@@ -1,0 +1,282 @@
+# Phase 1: Initial Reconnaissance & Information Gathering
+1.1 Passive Reconnaissance
+ WHOIS Lookup
+
+whois 0.0.0.0
+DNS Enumeration
+
+
+nslookup 0.0.0.0
+dig -x 0.0.0.0
+host 0.0.0.0
+ Reverse DNS Lookup
+
+
+dig -x 0.0.0.0 +short
+nslookup 0.0.0.0
+host 0.0.0.0
+ ASN Lookup
+
+
+whois -h whois.cymru.com " -v 0.0.0.0"
+ Shodan Search
+
+
+shodan search "0.0.0.0"
+shodan host 0.0.0.0
+ Censys Search
+
+
+# Via Censys web interface or API:
+# Search: services.ip:0.0.0.0
+ Certificate Transparency Logs
+
+
+curl "https://crt.sh/?q=0.0.0.0&output=json"
+ Google Dorking
+
+text
+site:0.0.0.0
+intitle:"index of" 0.0.0.0
+inurl:0.0.0.0
+ Historical DNS Records via SecurityTrails
+
+ Archive.org Snapshots
+
+1.2 Firewall Fingerprinting & Detection
+ Traceroute
+
+
+traceroute 0.0.0.0
+traceroute -I 0.0.0.0
+traceroute -T 0.0.0.0
+mtr 0.0.0.0
+ Ping Analysis
+
+
+ping -c 10 0.0.0.0
+fping 0.0.0.0
+ TTL Analysis
+
+
+hping3 -c 5 -S 0.0.0.0 -p 80
+ WAF Detection
+
+
+wafw00f http://0.0.0.0
+wafw00f https://0.0.0.0 -a
+whatwaf -u http://0.0.0.0
+nmap --script=http-waf-detect 0.0.0.0
+nmap --script=http-waf-fingerprint 0.0.0.0
+Phase 2: Active Scanning & Port Enumeration
+2.1 Basic Port Scanning
+ Quick TCP Scan
+
+
+nmap -sS 0.0.0.0
+nmap -F 0.0.0.0
+ Full TCP Port Scan
+
+
+nmap -p- 0.0.0.0
+masscan -p1-65535 0.0.0.0 --rate=10000
+ UDP Port Scan
+
+
+nmap -sU 0.0.0.0
+nmap -sU --top-ports 100 0.0.0.0
+unicornscan -mU 0.0.0.0
+ Service Version Detection
+
+
+nmap -sV 0.0.0.0
+ OS Fingerprinting
+
+
+nmap -O 0.0.0.0
+xprobe2 0.0.0.0
+2.2 Stealth & Evasion Scanning
+ SYN Stealth Scan
+
+
+nmap -sS -Pn 0.0.0.0
+ FIN, NULL, Xmas Scans
+
+
+nmap -sF 0.0.0.0
+nmap -sN 0.0.0.0
+nmap -sX 0.0.0.0
+ ACK Scan
+
+
+nmap -sA 0.0.0.0
+ Idle/Zombie Scan
+
+
+nmap -sI <zombie_host> 0.0.0.0
+ Fragmentation
+
+
+nmap -f 0.0.0.0
+ Decoy Scanning
+
+
+nmap -D RND:10 0.0.0.0
+ Source Port Manipulation
+
+
+nmap --source-port 53 0.0.0.0
+ Timing & Randomization
+
+
+nmap -T0 0.0.0.0
+nmap --randomize-hosts 0.0.0.0
+2.3 Firewall-Specific Scanning
+ Firewalking
+
+
+firewalk -S1-1024 -i eth0 0.0.0.0
+ ACL Enumeration
+
+
+nmap -sA -p 1-1024 0.0.0.0
+ Banner Grabbing
+
+
+nc -v 0.0.0.0 80
+nmap -sV --script=banner 0.0.0.0
+ HTTP Methods Testing
+
+
+nmap --script http-methods 0.0.0.0
+Phase 3: Service Enumeration & Analysis
+3.1 Common Services Enumeration
+ HTTP/HTTPS
+
+
+nmap -p 80,443,8080,8443 --script http-enum,http-headers 0.0.0.0
+nikto -h http://0.0.0.0
+curl -I http://0.0.0.0
+ SSH/FTP/SMB/DNS/SNMP/LDAP/RDP
+
+
+nmap -p 22,21,445,53,161,389,3389 --script vuln 0.0.0.0
+3.2 SSL/TLS Certificate Analysis
+ Cipher & Certificate Info
+
+
+nmap --script ssl-enum-ciphers,ssl-cert -p 443 0.0.0.0
+testssl.sh https://0.0.0.0
+ Weak Ciphers & Protocols
+
+
+sslyze --regular 0.0.0.0:443
+Phase 4: Vulnerability Assessment
+4.1 Automated Scanning
+ Nmap NSE Vuln Scripts
+
+
+nmap --script vuln 0.0.0.0
+ Nuclei Templates
+
+
+nuclei -u http://0.0.0.0
+nuclei -u http://0.0.0.0 -t cves/
+4.2 CVE Research
+ Query CVE databases (MITRE, NVD, CVE Details) for firewall vendor vulnerabilities.
+
+ Searchsploit for firewall and WAF CVEs.
+
+ Focus on high-impact CVEs like RCEs, auth bypasses, path traversal.
+
+4.3 503 Error Analysis
+ Investigate Causes (overload, maintenance, misconfig)
+
+ Request Method Tests
+
+
+curl -X OPTIONS http://0.0.0.0 -v
+ Retry-After Header
+
+
+curl -I http://0.0.0.0 | grep -i retry-after
+Phase 5: Exploitation & Testing
+5.1 Authentication Testing
+ Default credentials check (admin/admin, root/root).
+
+ Hydra/Medusa brute force (SSH, HTTP).
+
+5.2 Firewall Bypass Techniques
+ HTTP tunneling with proxytunnel.
+
+ Port redirection and protocol smuggling.
+
+ IP obfuscation (decimal, hex, octal).
+
+5.3 Rule Testing
+ Compare intended vs. actual ACL behavior.
+
+ Firewalking-based rule mapping.
+
+5.4 Exploitation Frameworks
+ Metasploit modules for firewall CVEs.
+
+ Manual PoC testing in scope.
+
+Phase 6: Post-Exploitation & Validation
+ Document access, privilege level, screenshots, logs.
+
+ Map internal network with arp -a, netstat -ano.
+
+ Collect configs, credentials, logs.
+
+Phase 7: Bypassing Detection & Evasion
+ IDS/IPS evasion via fragmentation, slow scans.
+
+ WAF bypass: rotate IPs, headers, methods.
+
+ Rate limit avoidance: proxy usage, delays.
+
+Phase 8: Documentation & Reporting
+ Collect evidence: screenshots, pcap, Burp logs.
+
+ Report each finding with title, severity, CVSS, steps, impact, remediation.
+
+ Structure: Executive Summary, Technical Details, Recommendations, Appendices.
+
+Phase 9: Cleanup & Responsible Disclosure
+ Remove uploads, accounts, backdoors; restore configs.
+
+ Submit report via proper channel; follow up professionally.
+
+Phase 10: Additional Checks & Advanced Techniques
+ IPv6 enumeration.
+
+ SNMP walk if available.
+
+ Misconfiguration checks: exposed panels, .git, backups.
+
+ CORS and security headers validation.
+
+Essential Tools Reference
+
+# Recon: nmap, masscan, shodan, censys, amass
+# Scanning: nmap NSE, nuclei, nikto, wafw00f
+# SSL/TLS: testssl.sh, sslyze
+# Exploitation: metasploit, sqlmap, burp suite
+# Post-Exploitation: crackmapexec, linpeas, bloodhound
+# Network Analysis: wireshark, tcpdump, hping3
+Quick Reference Summary
+text
+- [ ] Passive Recon (WHOIS, DNS, Shodan, Censys)
+- [ ] Firewall Fingerprinting (traceroute, WAF detection)
+- [ ] Port Scanning (TCP, UDP, stealth)
+- [ ] Service Enumeration (HTTP, SSH, SMB, etc.)
+- [ ] SSL/TLS Analysis
+- [ ] Vulnerability Scanning (automated & manual)
+- [ ] CVE Research & Exploitation
+- [ ] 503 Error Analysis
+- [ ] Authentication & Bypass Tests
+- [ ] Post-Exploitation Mapping
+- [ ] Evidence Collection & Reporting
+- [ ] Cleanup & Disclosure
